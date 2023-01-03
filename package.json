@@ -1,0 +1,17 @@
+{
+  "name": "simple-check",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fast-check": "^3.5.0",
+    "ts-morph": "^17.0.1",
+    "typescript": "^4.9.4",
+    "vitest": "^0.26.2"
+  }
+}
