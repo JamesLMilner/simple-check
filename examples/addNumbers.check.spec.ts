@@ -5,13 +5,14 @@ import {
   ShortString,
 } from "../src/arguments";
 import {
-  DoesNotThrow,
   IsLessThanOrEqualToZero,
   IsGreaterThanOrEqualToZero,
   IsGreaterThanArgs,
-  DoesThrow,
   IsNumber,
-} from "../src/expectations";
+} from "../src/properties/number";
+
+import { DoesNotThrow, DoesThrow } from "../src/properties/errors";
+
 import { addNumbers } from "./addNumbers";
 import { check } from "./utils/viteCheck";
 

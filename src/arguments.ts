@@ -23,3 +23,8 @@ export const ShortString: Types = {
   name: "short string",
   type: () => fc.string({ maxLength: 5 }),
 };
+
+export const NumericArray: Types = {
+  name: "short string",
+  type: () => fc.array(fc.float()),
+};

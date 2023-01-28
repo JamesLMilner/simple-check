@@ -6,12 +6,11 @@ import {
   ShortString,
 } from "../src/arguments";
 import {
-  DoesNotThrow,
   IsGreaterThanOrEqualToZero,
   IsGreaterThanArgs,
-  DoesThrow,
   IsNumber,
-} from "../src/expectations";
+} from "../src/properties/number";
+import { DoesNotThrow, DoesThrow } from "../src/properties/errors";
 import { addPositiveNumbers } from "./addPositive";
 
 check(addPositiveNumbers, [

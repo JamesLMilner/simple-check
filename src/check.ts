@@ -1,6 +1,7 @@
 import * as fc from "fast-check";
+import { e } from "vitest/dist/index-40ebba2b";
 import { Types } from "./arguments";
-import { ExpectedBehaviours } from "./expectations";
+import { Properties, Property } from "./properties/types";
 
 function fastCheckAssert(
   args: Types[],
@@ -16,12 +17,15 @@ function getArgDescribe(args: { name: string }[]): string {
 function withArguments(
   args: any[],
   func: (...args: any) => any,
-  expectBehavior: ExpectedBehaviours,
-  it: any
+  properties: Property,
+  it: any,
+  expectToBeTrue: any
 ): void {
-  it(`${expectBehavior.statement}`, () => {
+  it(`${properties.statement}`, () => {
     fastCheckAssert(args, (...args) => {
-      expectBehavior.expect(func, args);
+      properties.expect(func, args, (value: boolean) =>
+        expectToBeTrue(value).toBe(true)
+      );
     });
   });
 }
@@ -29,21 +33,32 @@ function withArguments(
 function check<
   It extends (...args: any[]) => any,
   Describe extends (...args: any[]) => any,
+  ExpectToBeTrue extends (value: boolean) => void,
   Func extends (...args: any[]) => any
 >(
   func: Func,
-  functionTests: [Types[], ExpectedBehaviours[]][],
-  testFunctions: { it: It; describe: Describe }
+  functionTests: [Types[], Properties][],
+  testFunctions: { it: It; describe: Describe; expectToBeTrue: ExpectToBeTrue }
 ): void {
-  const { describe, it } = testFunctions;
+  const { describe, it, expectToBeTrue } = testFunctions;
 
   describe(func.name, () => {
     functionTests.forEach(([args, properties]) => {
       const argDescribe = getArgDescribe(args);
 
       describe(argDescribe, () => {
-        properties.forEach((props) => {
-          withArguments(args, func, props, it);
+        let flattenedProperties: Property[];
+
+        if (Array.isArray(properties)) {
+          flattenedProperties = (properties as any).flat(
+            Infinity
+          ) as Property[];
+        } else {
+          flattenedProperties = properties;
+        }
+
+        flattenedProperties.forEach((props) => {
+          withArguments(args, func, props, it, expectToBeTrue);
         });
       });
     });
@@ -52,11 +67,16 @@ function check<
 
 export function checkFactory<
   It extends (...args: any[]) => any,
-  Describe extends (...args: any[]) => any
->(testFunctions: { it: It; describe: Describe }) {
+  Describe extends (...args: any[]) => any,
+  ExpectToBeTrue extends (value: boolean) => void
+>(testFunctions: {
+  it: It;
+  describe: Describe;
+  expectToBeTrue: ExpectToBeTrue;
+}) {
   return (
     func: any,
-    functionTests: [args: Types[], properties: ExpectedBehaviours[]][]
+    functionTests: [args: Types[], properties: Properties][]
   ) => {
     return check(func, functionTests, testFunctions);
   };
